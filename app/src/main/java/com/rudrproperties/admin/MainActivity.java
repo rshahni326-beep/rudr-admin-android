@@ -9,8 +9,10 @@ import android.webkit.WebSettings;
 import android.webkit.ValueCallback;
 import android.net.Uri;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 
 public class MainActivity extends Activity {
+
     private WebView webView;
     private ValueCallback<Uri[]> uploadCallback;
     private static final int FILE_CHOOSER_REQUEST = 1001;
@@ -28,6 +30,7 @@ public class MainActivity extends Activity {
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(true);
 
         webView.setWebViewClient(new WebViewClient());
 
@@ -44,9 +47,15 @@ public class MainActivity extends Activity {
 
                 uploadCallback = callback;
 
-                Intent intent = params.createIntent();
-                startActivityForResult(intent, FILE_CHOOSER_REQUEST);
-                return true;
+                try {
+                    Intent intent = params.createIntent();
+                    startActivityForResult(intent, FILE_CHOOSER_REQUEST);
+                    return true;
+                } catch (ActivityNotFoundException e) {
+                    uploadCallback.onReceiveValue(null);
+                    uploadCallback = null;
+                    return false;
+                }
             }
         });
 
@@ -59,9 +68,11 @@ public class MainActivity extends Activity {
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == FILE_CHOOSER_REQUEST && uploadCallback != null) {
-            Uri[] results =
-                WebChromeClient.FileChooserParams.parseResult(resultCode, data);
+        if (requestCode == FILE_CHOOSER_REQUEST
+                && uploadCallback != null) {
+
+            Uri[] results = WebChromeClient.FileChooserParams
+                    .parseResult(resultCode, data);
 
             uploadCallback.onReceiveValue(results);
             uploadCallback = null;
