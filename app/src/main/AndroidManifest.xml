@@ -3,6 +3,7 @@
 
     <application
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:usesCleartextTraffic="false"
         android:label="RUDR ADMIN"
         android:allowBackup="false"
         android:supportsRtl="true">
