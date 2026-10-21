@@ -2,23 +2,24 @@ package com.rudrproperties.admin;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.content.Intent;
+import android.net.Uri;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.ValueCallback;
-import android.net.Uri;
-import android.content.Intent;
-import android.content.ActivityNotFoundException;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
     private WebView webView;
     private ValueCallback<Uri[]> uploadCallback;
+
     private static final int FILE_CHOOSER_REQUEST = 1001;
 
     private static final String ADMIN_URL =
-        "https://rshahni326-beep.github.io/rudr-properties-site/admin.html";
+            "https://rshahni326-beep.github.io/rudr-properties-site/admin.html";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +29,16 @@ public class MainActivity extends Activity {
         setContentView(webView);
 
         WebSettings settings = webView.getSettings();
+
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
 
         webView.setWebViewClient(new WebViewClient());
 
         webView.setWebChromeClient(new WebChromeClient() {
+
             @Override
             public boolean onShowFileChooser(
                     WebView view,
@@ -49,11 +53,22 @@ public class MainActivity extends Activity {
 
                 try {
                     Intent intent = params.createIntent();
-                    startActivityForResult(intent, FILE_CHOOSER_REQUEST);
+                    startActivityForResult(
+                            intent,
+                            FILE_CHOOSER_REQUEST
+                    );
                     return true;
-                } catch (ActivityNotFoundException e) {
+
+                } catch (Exception e) {
                     uploadCallback.onReceiveValue(null);
                     uploadCallback = null;
+
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Could not open gallery",
+                            Toast.LENGTH_LONG
+                    ).show();
+
                     return false;
                 }
             }
@@ -64,7 +79,9 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(
-            int requestCode, int resultCode, Intent data) {
+            int requestCode,
+            int resultCode,
+            Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -86,5 +103,19 @@ public class MainActivity extends Activity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (uploadCallback != null) {
+            uploadCallback.onReceiveValue(null);
+            uploadCallback = null;
+        }
+
+        if (webView != null) {
+            webView.destroy();
+        }
+
+        super.onDestroy();
     }
 }
