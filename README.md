@@ -1,1 +1,0 @@
-# rudr-admin-android
