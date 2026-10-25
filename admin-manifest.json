@@ -1,0 +1,31 @@
+{
+  "name": "RUDR PROPERTIES Admin",
+  "short_name": "RUDR Admin",
+  "description": "Add, edit and delete property listings",
+  "start_url": "./admin.html",
+  "scope": "./admin.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a1b33",
+  "theme_color": "#0a1b33",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
